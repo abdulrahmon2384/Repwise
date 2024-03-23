@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}
+        unauthorize
+{% endblock %}
+
+
+
+{% block style %}
+    <style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f4f4f4;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			max-width: 600px;
+			margin: 50px auto;
+			background-color: #fff;
+			padding: 20px;
+			border-radius: 5px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		h1 {
+			color: #333;
+		}
+
+		p {
+			color: #666;
+			margin-bottom: 20px;
+		}
+
+		#username {
+			font-weight: bold;
+			color: #333;
+		}
+    </style>
+{% endblock %}
+
+
+{% block content %}
+	<div class="container">
+		<h1>Unauthorized Access</h1>
+		<p>We're sorry, {{ username }}, but you are not authorized to view this page.</p>
+		<p>Please contact the administrator if you believe you should have access to this page.</p>
+	</div>	
+{% endblock %}

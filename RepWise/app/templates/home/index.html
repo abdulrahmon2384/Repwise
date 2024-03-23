@@ -1,0 +1,90 @@
+{% extends "base.html" %} 
+
+{% block title %} 
+    ReqMaster requirements
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="heading">ReqMaster - Requirements</div>
+	<div class="subheading">
+		<div class="subheading-text">
+			Welcome to ReqMaster - This Are Your Requirements 
+		</div>
+		<div class="update-info">Last Updated: <span>{{ last_updated }}</span></div>
+	</div>
+	<hr>
+	<div class="user-info">
+		<div class="usersubheading">User Information</div>
+
+		<div id="user-info" user-name="{{ username }}"></div>
+		<div class="usercontainer">
+			<div class="info-item username">Username - <span id="username"></span>
+			</div>
+			<div class="info-item id">ID - <span id="userid"></span>
+			</div>
+			<div class="info-item role">Role - <span id="userole"></span>
+			</div>
+		</div>
+	</div> 
+	
+	<div id="colapsable-div">
+		{% if isempty %}
+			<div class="empty-database">
+				<div class="empty-database-content">
+					<div class="empty-database-header">Requirements Not Available</div>
+					<div class="empty-database-message">The database is empty</div>
+				</div>
+			</div>
+		{% elif latest_requirement %}
+
+		<div class="requirement-section">
+			<div id="requirementsContainer">
+				{% for requirement in latest_requirement %}
+				<div class="requirement-item">
+					<div class="checkbox-heading">
+						<label for="req1"
+							>{{ requirement['category'] }} </label
+						>
+					</div>
+					<div class="requirement-description">
+						{{ requirement['description'] }}
+					</div>
+					<div class="checkbox-container">
+						<div class="checkbox-inner-container">
+							<span >ok</span>
+							<input type="checkbox" id="req1" value="{{ requirement['id'] }}" class="custom-checkbox" />
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+			<div class="agreement-section">
+				<div class="subheading">Agreement</div>
+				<div class="agreement-info">
+					By checking the boxes above, I agree to comply with the
+					stated requirements.
+				</div>
+				<button class="button" onclick="processCheckboxBeforClear()">
+					Agree
+				</button>
+			</div>
+		</div>
+		{% else %}
+		<div class="agreement-success">
+			<div class="agreement-success-content">
+				<i class="fas fa-check-circle"></i>
+				<span>Requirement Agreed</span>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+	<div class="horizontal-line"></div>
+	<div>
+		<div>
+			<div class="category-title" >Categories</div>
+			<div id="categories-list"></div>
+		</div>
+	</div>
+</div>
+{% endblock %}
