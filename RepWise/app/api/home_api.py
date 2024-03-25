@@ -20,14 +20,11 @@ def api():
 	return jsonify(data), 200
 
 
-
-
-
 @app.route('/api/validate')
 def validate():
 	whitelist = db['whitelist']
 	username = request.headers.get('X-Replit-User-Name')
-	
+
 	if username in whitelist:
 		return jsonify({"valid": True}), 200
 	else:
@@ -36,22 +33,25 @@ def validate():
 
 @app.route('/api/store-values', methods=['POST'])
 def store_values():
-    data = request.json
-    values = data.get('values', [])
-    print(values)
-    if not values or len(values) != 2:
-        return jsonify({'message': "Values can't be empty"}), 400
-    
-    store_values_in_db(values)
-    return jsonify({'message': 'Values stored successfully'}), 200
+	data = request.json
+	values = data.get('values', [])
 
+	if not values or len(values) != 2:
+		return jsonify({'message': "Values can't be empty"}), 400
+
+	store_values_in_db(values)
+	return jsonify({'message': 'Values stored successfully'}), 200
 
 
 @app.route('/api/categories', methods=['GET'])
 def get_categories():
-    categories_data = db["categories"]
-    categories_json = convert_to_dict(categories_data)
-    return jsonify({"categories": categories_json}), 200
-	
+	try:
+		categories_data = db.get("categories")
+		categories_json = convert_to_dict(categories_data)
+		return jsonify({"categories": categories_json}), 200
 
-
+	except Exception as e:
+		error_message = "An error occurred while retrieving categories: {}".format(
+		    str(e))
+		app.logger.error(error_message)
+		return jsonify({"error": error_message}), 500

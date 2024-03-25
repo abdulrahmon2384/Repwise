@@ -20,6 +20,8 @@ if len(db.keys()) == 0:
     db['categories'] = dict()
 
 
-
+#Uncomment below code for generating fake requirements 
+#from RepWise.app.generate_fake_data import data
+#db["categories"] = data
 
 
