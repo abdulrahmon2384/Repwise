@@ -13,7 +13,6 @@ def index():
 		if username not in whitelist:
 			return render_template('home/notallow.html', username=username)
 
-
 		isempty = is_database_empty(db)
 		json_data = db.get('categories', {})
 		latest_requirement = get_latest_values_by_category(json_data, username)
@@ -26,3 +25,5 @@ def index():
 							   last_updated=last_updated,
 							   isempty=isempty,
 							   db=db)
+
+

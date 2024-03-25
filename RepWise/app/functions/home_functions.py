@@ -1,12 +1,34 @@
 from RepWise.app import db
 from datetime import datetime, timedelta
-import random, string, uuid
+import random, string, json
+
+
+def load_categories_from_file(db, filename):
+	try:
+		with open(filename, 'r') as file:
+			data = json.load(file)
+			db["categories"] = data
+
+	except FileNotFoundError:
+		print("Categories file not found.")
+
+	except json.JSONDecodeError:
+		print("Error decoding JSON in categories file.")
+
+	except Exception as e:
+		print(f"An error occurred: {str(e)}")
+
+
+def initialize_database(db):
+	if len(db.keys()) == 0:
+		db['whitelist'] = dict()
+		db['categories'] = dict()
 
 
 def is_database_empty(db):
-    tables_exist = db.get('categories').keys()
-    print(db.get('categories').keys())
-    return True if len(tables_exist) == 0 else False
+	tables_exist = db.get('categories').keys()
+	
+	return True if len(tables_exist) == 0 else False
 
 
 def get_latest_values_by_category(json_data: str, user=None) -> list:
@@ -77,21 +99,70 @@ def add_user(user: str) -> None:
 	              }})
 
 
-def update_requirement(category: str, description: str, db: dict) -> None:
+def add_data_to_categories(json_name, requirements):
+	try:
+		with open(json_name, 'r+') as file:
+			data = json.load(file)
 
+			category = requirements['category']
+			if category in data:
+				data[category].append(requirements)
+			else:
+				data[category] = [requirements]
+
+			file.seek(0)
+			json.dump(data, file, indent=4)
+			file.truncate()
+
+	except FileNotFoundError:
+		print("JSON file not found.")
+	except json.JSONDecodeError:
+		print("Error decoding JSON in the file.")
+	except Exception as e:
+		print(f"An error occurred: {str(e)}")
+
+
+def delete_data_by_uuid(json_name, uuid):
+	try:
+		with open(json_name, 'r+') as file:
+			data = json.load(file)
+
+			for category, category_data in data.items():
+				data[category] = [
+				    item for item in category_data if item.get('id') != uuid
+				]
+
+			file.seek(0)
+			json.dump(data, file, indent=4)
+			file.truncate()
+
+	except FileNotFoundError:
+		print("JSON file not found.")
+
+	except json.JSONDecodeError:
+		print("Error decoding JSON in the file.")
+
+	except Exception as e:
+		print(f"An error occurred: {str(e)}")
+
+
+def update_requirement(category: str, description: str, db: dict,
+                       json_name: str) -> None:
 	if category not in db:
 		db[category] = []
 
 	descriptions = [req['description'] for req in db.get(category, [])]
 	if description not in descriptions:
 		requirement = {
-		    "id": str(uuid.uuid4()),
+		    "id": generate_unique_uid(length=6),
 		    "timestamp": datetime.now().timestamp(),
 		    "description": description,
 		    "category": category
 		}
+		add_data_to_categories(json_name, requirement)
 		db[category].append(requirement)
 		print("Requirement added successfully.")
+
 	else:
 		print("Description Already Exists")
 
