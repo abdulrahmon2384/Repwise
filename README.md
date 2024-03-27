@@ -1,49 +1,62 @@
+## Requirement Page Project
+
+The Requirement Page Project serves the purpose of agreeing to agreements. Each feed is sorted by timestamp and is accessible only on Replit. It verifies users using the Replit username retrieved from the `getUsernameDetail` function to store user values. Here are the basic usage instructions for this project:
+
+1. **Accessing the Requirement Page:**
+   - Visit the project page on Replit to access the Requirement Page.
+
+2. **Agreeing to Agreements:**
+   - Once on the Requirement Page, users can review and agree to agreements presented.
+
+3. **Timestamp Sorting:**
+   - Feeds are sorted by timestamp,
+4. **Verification Mechanism:**
+   - The project verifies users using the Replit username obtained from the `/api/user-info` function.
+
+## Usage of Additional Functions
+
+### 1. Adding Users
+##### You can add a user by calling the `add_user()` function:
+```python
 
 
+username = "yourusername"
+add_user(username)
+```
 
-`
-#importing the required module
-from RepWise.app.functions import update_requirement, delete_data_by_uuid, load_categories_from_file
-`
+### 2. Checking Completion Status
+#### To check if a user has agreed to all requirements, you can use the following endpoint:
+```bash
+
+GET /api/validate/<username>
+```
+
+### 3. Updating Requirements
+#### To update requirements, you can use the `update_requirement()` function:
 
 
+```python
+
+category = "category_name"
+description = "description_text"
+update_requirement(category, description, db)
+```
+
+
+### 4. Loading Categories from File
+#### To load categories from a file, use the `load_categories_from_file()` function:
+
+```python
+
+ # by default the file name was file.json Replace "categories.json" with the path to your categories file.
 filename = "file.json"
-#uncomment to load requirements from json file 
 load_categories_from_file(db, filename)
+```
 
 
-
-
-`
-
-# Consider this snippet from ./RepWise/app/functions/home_functions.py
-# the fuction update_requirement(...) is use to update requiement by category
-def update_requirement_demo():
-
-    json_file = "file.json"
-    category_name = ''
-    description = """  
-
-	              """
-
-    if category_name and description:
-        update_requirement(category_name, description, db, json_file)
-        print(f"Requirement added successfully for the '{category_name}' category.")
-    else:
-        print("Please enter a valid category name and description.")
-`
-
-
-
-
-# Consider this snippet from ./RepWise/app/functions/home_functions.py
-# the fuction delete_data_by_uuid(..) is use to delete requiement by id
+### Additionally, when adding new items, they will be placed in a new category if the category does not exist. Otherwise, they will be added to the existing category. Categories may accumulate over time as new items are added.
 
 
 
 
 
-
-#This are judt demo to show how to use the functions
-update_requirement_demo()
-delete_requirement_demo()

@@ -19,6 +19,6 @@ app.register_blueprint(api_blueprint)
 from RepWise.app.functions import initialize_database
 initialize_database(db)
 
-
+db["categories"] = {}
 
 

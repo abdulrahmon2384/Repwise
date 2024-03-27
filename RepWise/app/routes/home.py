@@ -9,6 +9,7 @@ home_bp = Blueprint('home', __name__)
 def index():
 	username = request.headers.get("X-Replit-User-Name")
 	whitelist = db.get("Users", {}).keys()
+	
 	if username not in whitelist:
 		add_user(username)
 

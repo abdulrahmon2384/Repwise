@@ -6,24 +6,26 @@
 
 {% block content %}
 <div class="container">
-	<div class="heading">ReqMaster - Requirements</div>
-	<div class="subheading">
-		<div class="subheading-text">
-			Welcome to ReqMaster - This Are Your Requirements 
+	<div class="header">
+		<div class="heading">ReqMaster - Requirements</div>
+		<div class="subheading">
+			<div class="subheading-text">
+				Welcome to ReqMaster - This Are Your Requirements 
+			</div>
+			<div class="update-info">Last Updated: <span>{{ last_updated }}</span></div>
 		</div>
-		<div class="update-info">Last Updated: <span>{{ last_updated }}</span></div>
 	</div>
-	<hr>
+	
 	<div class="user-info">
 		<div class="usersubheading">User Information</div>
 
 		<div id="user-info" user-name="{{ username }}"></div>
 		<div class="usercontainer">
-			<div class="info-item username">Username - <span id="username"></span>
+			<div class="info-item username" style="text-align: center;">Username <div id="username"></div>
 			</div>
-			<div class="info-item id">ID - <span id="userid"></span>
+			<div class="info-item id" style="text-align: center;">ID  <div id="userid"></div>
 			</div>
-			<div class="info-item role">Role - <span id="userole"></span>
+			<div class="info-item role" style="text-align: center;">Role <div id="userole"></div>
 			</div>
 		</div>
 	</div> 
@@ -38,7 +40,7 @@
 	<div class="horizontal-line"></div>
 	<div>
 		<div>
-			<div id="category-title" >Categories</div>
+			<div id="category-title" class="category-title">Categories</div>
 			<div id="categories-list"></div>
 		</div>
 	</div>
