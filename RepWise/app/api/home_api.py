@@ -1,57 +1,85 @@
 from flask import Blueprint, jsonify, request
 from RepWise.app import app, db
 from RepWise.app.functions import *
-import json
 
 api_home_bp = Blueprint('home', __name__)
+
+
 
 
 @api_home_bp.route('/api/user-info')
 def api():
 	headers = request.headers
-	if 'X-Replit-User-Name' not in headers or 'X-Replit-User-Id' not in headers or 'X-Replit-User-Roles' not in headers:
+	if not headers:
 		return jsonify({}), 400
 
 	username = request.headers.get('X-Replit-User-Name')
 	user_id = request.headers.get('X-Replit-User-Id')
 	roles = request.headers.get('X-Replit-User-Roles')
-
 	data = {"name": username, "id": user_id, "roles": roles, "test": "data"}
 	return jsonify(data), 200
 
 
-@app.route('/api/validate')
-def validate():
-	whitelist = db['whitelist']
-	username = request.headers.get('X-Replit-User-Name')
+@app.route("/api/validate/<username>", methods=['GET'])
+def CompletionStatus(username):
+        if not username :
+            return jsonify({"message": "Username is required"}), 400
 
-	if username in whitelist:
-		return jsonify({"valid": True}), 200
-	else:
-		return jsonify({"valid": False}), 200
+        if username not in db.get('Users', {}):
+            return jsonify({"message": "User not found"}), 400
+
+        bool = isUserCompletionStatus(username)
+        return jsonify({"CompletionStatus":bool})
 
 
-@app.route('/api/store-values', methods=['POST'])
+
+
+
+@app.route('/api/checkbox-values', methods=['POST'])
 def store_values():
-	data = request.json
-	values = data.get('values', [])
+    values = request.json.get('values', [])
+    username = request.headers.get('X-Replit-User-Name')
 
-	if not values or len(values) != 2:
-		return jsonify({'message': "Values can't be empty"}), 400
-
-	store_values_in_db(values)
-	return jsonify({'message': 'Values stored successfully'}), 200
+    print('CHeckbox values', values)
+    successfull = append_requirment_agreed([values, username])
+    return jsonify({'message': 'Values stored successfully'}), 200
 
 
-@app.route('/api/categories', methods=['GET'])
+
+
+
+
+@app.route('/api/all-feeds', methods=['GET'])
 def get_categories():
 	try:
 		categories_data = db.get("categories")
 		categories_json = convert_to_dict(categories_data)
+		
+		if "eMPTy" in categories_json:
+			return jsonify({"categories":{}}), 200
+			
 		return jsonify({"categories": categories_json}), 200
+	except :
+		return jsonify({}), 500
 
-	except Exception as e:
-		error_message = "An error occurred while retrieving categories: {}".format(
-		    str(e))
-		app.logger.error(error_message)
-		return jsonify({"error": error_message}), 500
+
+
+
+@app.route('/api/userAgreementId')
+def agreement_id():
+	username = request.headers.get('X-Replit-User-Name')
+	user_data = db["Users"].get(username)
+	
+	if not user_data:
+		return jsonify(
+			{
+			   "message": f"User {username} not found ",
+			"agreementid": {}
+			}), 400
+		
+	agreement_id = user_data.get('requirment_agreed',[])
+	return jsonify({
+		     "agreementid": 
+		              {id:id for id in agreement_id if id}
+	            }), 200
+

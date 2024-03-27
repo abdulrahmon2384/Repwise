@@ -1,86 +1,86 @@
 {
-    "Market Research": [
-        {
-            "id": "YRAyoY",
-            "timestamp": 1711356355.103375,
-            "description": " Claim that the company has a strong track record in the field of marketing and sales. ",
-            "category": "Market Research"
-        },
-        {
-            "id": "sBjzRY",
-            "timestamp": 1711356492.003219,
-            "description": " Claim: I want to know what the market is doing with the products I use.\n\t",
-            "category": "Market Research"
-        },
-        {
-            "id": "uTLPBc",
-            "timestamp": 1711356562.302727,
-            "description": " Claim that the company has a market research team that is responsible for conducting market research and analyzing market trends and comp....\n\t",
-            "category": "Market Research"
-        },
-        {
-            "id": "XBCqaG",
-            "timestamp": 1711356745.591352,
-            "description": " Conduct a detailed market research analysis including competitor analysis and target market segmentation.\"\n\t   ",
-            "category": "Market Research"
-        }
-    ],
-    "Sales": [
-        {
-            "id": "7",
-            "timestamp": 1647972330,
-            "description": "Train sales team on product knowledge",
-            "category": "Sales"
-        },
-        {
-            "id": "8",
-            "timestamp": 1647972320,
-            "description": "Establish sales targets and metrics",
-            "category": "Sales"
-        },
-        {
-            "id": "9",
-            "timestamp": 1647972309,
-            "description": "Implement a CRM system for lead management",
-            "category": "Sales"
-        },
-        {
-            "id": "EVBFvW",
-            "timestamp": 1711357485.647195,
-            "description": "  \n    Implement a new sales training program for the team.\n\n\t\n       \n\t",
-            "category": "Sales"
-        },
-        {
-            "id": "hLAZuq",
-            "timestamp": 1711357506.089856,
-            "description": "  \n   Set up monthly sales performance review meetings.\n\n   \n       \n\t",
-            "category": "Sales"
-        },
-        {
-            "id": "JwbICX",
-            "timestamp": 1711357515.058439,
-            "description": "  \n   Research and implement a new CRM software for lead management.\n\n   \n       \n\t",
-            "category": "Sales"
-        }
-    ],
-    "Marketing Strategy": [
-        {
-            "id": "jJigVR",
-            "timestamp": 1711357067.653275,
-            "description": "  \n        - Requirement 1 for Marketing Strategy-\n        Description: Develop a comprehensive marketing plan including market analysis, target audience identification, and budget allocation.\n        Due date: 1st December 2021\n\t",
-            "category": "Marketing Strategy\""
-        },
-        {
-            "id": "izUtiI",
-            "timestamp": 1711357087.850603,
-            "description": "  \n        - Requirement 2 for Marketing Strategy-\n        Description: Create engaging content for social media channels to increase brand visibility and engagement.\n        Due date: 15th November 2021\n\t",
-            "category": "Marketing Strategy\""
-        },
-        {
-            "id": "zSEIVZ",
-            "timestamp": 1711357112.335917,
-            "description": "  \n        - Requirement 3 for Marketing Strategy-\n        Description: Implement email marketing campaigns to target potential customers and boost conversion rates.\n        Due date: 20th November 2021\n\t",
-            "category": "Marketing Strategy\""
-        }
-    ]
+	"Market Research": [
+		{
+			"id": "YRAyoY",
+			"timestamp": 1711356355.103375,
+			"description": " Claim that the company has a strong track record in the field of marketing and sales. ",
+			"category": "Market Research"
+		},
+		{
+			"id": "sBjzRY",
+			"timestamp": 1711356492.003219,
+			"description": " Claim: I want to know what the market is doing with the products I use.\n\t",
+			"category": "Market Research"
+		},
+		{
+			"id": "uTLPBc",
+			"timestamp": 1711356562.302727,
+			"description": " Claim that the company has a market research team that is responsible for conducting market research and analyzing market trends and comp....\n\t",
+			"category": "Market Research"
+		},
+		{
+			"id": "XBCqaG",
+			"timestamp": 1711356745.591352,
+			"description": " Conduct a detailed market research analysis including competitor analysis and target market segmentation.\"\n\t   ",
+			"category": "Market Research"
+		}
+	],
+	"Sales": [
+		{
+			"id": "7",
+			"timestamp": 1647972330,
+			"description": "Train sales team on product knowledge",
+			"category": "Sales"
+		},
+		{
+			"id": "8",
+			"timestamp": 1647972320,
+			"description": "Establish sales targets and metrics",
+			"category": "Sales"
+		},
+		{
+			"id": "9",
+			"timestamp": 1647972309,
+			"description": "Implement a CRM system for lead management",
+			"category": "Sales"
+		},
+		{
+			"id": "EVBFvW",
+			"timestamp": 1711357485.647195,
+			"description": "  \n    Implement a new sales training program for the team.\n\n\t\n       \n\t",
+			"category": "Sales"
+		},
+		{
+			"id": "hLAZuq",
+			"timestamp": 1711357506.089856,
+			"description": "  \n   Set up monthly sales performance review meetings.\n\n   \n       \n\t",
+			"category": "Sales"
+		},
+		{
+			"id": "JwbICX",
+			"timestamp": 1711357515.058439,
+			"description": "  \n   Research and implement a new CRM software for lead management.\n\n   \n       \n\t",
+			"category": "Sales"
+		}
+	],
+	"Marketing Strategy": [
+		{
+			"id": "jJigVR",
+			"timestamp": 1711357067.653275,
+			"description": "  \n        - Requirement 1 for Marketing Strategy-\n        Description: Develop a comprehensive marketing plan including market analysis, target audience identification, and budget allocation.\n        Due date: 1st December 2021\n\t",
+			"category": "Marketing Strategy\""
+		},
+		{
+			"id": "izUtiI",
+			"timestamp": 1711357087.850603,
+			"description": "  \n        - Requirement 2 for Marketing Strategy-\n        Description: Create engaging content for social media channels to increase brand visibility and engagement.\n        Due date: 15th November 2021\n\t",
+			"category": "Marketing Strategy\""
+		},
+		{
+			"id": "zSEIVZ",
+			"timestamp": 1711357112.335917,
+			"description": "  \n        - Requirement 3 for Marketing Strategy-\n        Description: Implement email marketing campaigns to target potential customers and boost conversion rates.\n        Due date: 20th November 2021\n\t",
+			"category": "Marketing Strategy\""
+		}
+	]
 }

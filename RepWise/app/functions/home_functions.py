@@ -21,58 +21,37 @@ def load_categories_from_file(db, filename):
 
 def initialize_database(db):
 	if len(db.keys()) == 0:
-		db['whitelist'] = dict()
+		db['Users'] = dict()
 		db['categories'] = dict()
 
 
-def is_database_empty(db):
-	tables_exist = db.get('categories').keys()
-	
-	return True if len(tables_exist) == 0 else False
 
 
-def get_latest_values_by_category(json_data: str, user=None) -> list:
-	latest_values = []
-	un_agreed = []
-
-	for category, values in json_data.items():
-		latest_value = max(values, key=lambda x: x['timestamp'])
-		latest_values.append(latest_value)
-
-	if not user:
-		return latest_values
-
-	user_data = db['whitelist'].get(user)
-	if user_data is None:
-		return []
-
-	agreed_requirements = user_data.get('requirment_agreed', [])
-	for value in latest_values:
-		if value['id'] not in agreed_requirements:
-			un_agreed.append(value)
-
-	#print(un_agreed, user_data['requirment_agreed'])
-	return un_agreed
 
 
-def time_since_last_update(latest_values) -> str:
-	if not latest_values:
-		return "No values available"
+def time_since_last_update(db) -> str:
+    if not db.get("categories"):
+        return "No values available"
 
-	latest_timestamp = max(value["timestamp"] for value in latest_values)
-	current_time = datetime.now()
-	time_difference = current_time - datetime.fromtimestamp(latest_timestamp)
+    timestamps  = [
+		item.get("timestamp") 
+		for items in db["categories"].values() 
+		for item in items
+	]
+    latest_timestamp = max(timestamps)
+    current_time = datetime.now()
+    time_difference = current_time - datetime.fromtimestamp(latest_timestamp)
 
-	if time_difference < timedelta(seconds=60):
-		return "a few seconds ago"
-	elif time_difference < timedelta(minutes=60):
-		minutes = int(time_difference.total_seconds() // 60)
-		return f"{minutes} minutes ago"
-	elif time_difference < timedelta(hours=24):
-		hours = int(time_difference.total_seconds() // 3600)
-		return f"{hours} hours ago"
-	else:
-		return datetime.fromtimestamp(latest_timestamp).strftime(
+    if time_difference < timedelta(seconds=60):
+        return "a few seconds ago"
+    elif time_difference < timedelta(minutes=60):
+        minutes = int(time_difference.total_seconds() // 60)
+        return f"{minutes} minutes ago"
+    elif time_difference < timedelta(hours=24):
+        hours = int(time_difference.total_seconds() // 3600)
+        return f"{hours} hours ago"
+    else:
+        return datetime.fromtimestamp(latest_timestamp).strftime(
 		    "%B %d, %Y %I:%M %p")
 
 
@@ -87,13 +66,11 @@ def add_user(user: str) -> None:
 		quit()
 
 	username = user.strip().lower()
-
-	if username in db.get('whitelist', {}):
+	if username in db.get('Users', {}):
 		print("User already exists in the database.")
 		return
 
-	# Add user to the whitelist
-	db.setdefault('whitelist',
+	db.setdefault('Users',
 	              {}).update({username: {
 	                  'requirment_agreed': []
 	              }})
@@ -122,32 +99,10 @@ def add_data_to_categories(json_name, requirements):
 		print(f"An error occurred: {str(e)}")
 
 
-def delete_data_by_uuid(json_name, uuid):
-	try:
-		with open(json_name, 'r+') as file:
-			data = json.load(file)
-
-			for category, category_data in data.items():
-				data[category] = [
-				    item for item in category_data if item.get('id') != uuid
-				]
-
-			file.seek(0)
-			json.dump(data, file, indent=4)
-			file.truncate()
-
-	except FileNotFoundError:
-		print("JSON file not found.")
-
-	except json.JSONDecodeError:
-		print("Error decoding JSON in the file.")
-
-	except Exception as e:
-		print(f"An error occurred: {str(e)}")
 
 
 def update_requirement(category: str, description: str, db: dict,
-                       json_name: str) -> None:
+                       json_name: str = "file.json") -> None:
 	if category not in db:
 		db[category] = []
 
@@ -167,33 +122,60 @@ def update_requirement(category: str, description: str, db: dict,
 		print("Description Already Exists")
 
 
-def store_values_in_db(values):
-	requirements_id, username = values
-
-	user_data = db['whitelist'].get(username)
-	if user_data:
-		agreed_requirments = []
-
-		for req_id in requirements_id:
-			if req_id not in user_data['requirment_agreed']:
-				db['whitelist'][username]['requirment_agreed'].append(id)
-				agreed_requirments.append(id)
-		return agreed_requirments
-	else:
-		return []
+def append_requirment_agreed(values):
+    requirements_id, username = values
+    
+    user_data = db['Users'].get(username)
+    if user_data:
+        agreed_requirments = []
+		
+        for req_id in requirements_id:
+            if req_id not in user_data['requirment_agreed']:
+                db['Users'][username]['requirment_agreed'].append(req_id)
+        return True
+    else:
+        return False
 
 
 def convert_to_dict(categories_data):
-	categories_dict = {}
-	for category, values in categories_data.items():
-		if category not in categories_dict:
-			categories_dict[category] = []
-		for value in values:
-			data = {
+    #check if DB Isempty
+    empty = [True if len(all_categories)==0 else False for all_categories in categories_data.values()]
+    if all(empty):
+        return {"eMPTy": "Database Empty"}
+
+    categories_dict = {}
+    for category, values in categories_data.items():
+        if category not in categories_dict:
+            categories_dict[category] = []
+        for value in values:
+            data = {
 			    "id": value.get("id"),
 			    "timestamp": value.get("timestamp"),
 			    "description": value.get("description"),
 			    "category": value.get("category")
 			}
-			categories_dict[category].append(data)
-	return categories_dict
+            categories_dict[category].append(data)
+    return categories_dict
+
+
+
+
+
+def isUserCompletionStatus(username):
+    database = db.get("categories")
+    if database is None:
+        return False
+
+    user_data = db['Users'].get(username)
+    requirements_agreed = user_data.get('requirment_agreed', {})
+
+    if requirements_agreed:
+        for category, category_data in db["categories"].items():
+            unagreed_requirements = [
+				item for item in category_data if item.get('id') not in requirements_agreed
+			]
+            if len(unagreed_requirements) > 0:
+                return False
+        else:
+            return True	
+    return False

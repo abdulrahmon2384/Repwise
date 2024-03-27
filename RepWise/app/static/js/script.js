@@ -1,171 +1,224 @@
-// validate user
-async function validateUser() {
-	try {
-		const response = await fetch("/api/validate");
-		const isValidUser = await response.json();
-		return isValidUser;
-	} catch (error) {
-		console.error("Error validating user:", error);
-		return false;
-	}
+let requirements = []; 
+let checkedValues = [];
+
+function fetchDataAndPopulateCategories(apiUrl) {
+	fetch(apiUrl)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			for (var category in data.categories) {
+				for (var requirement in data.categories[category]){
+					requirements.push(data.categories[category][requirement])
+				}
+			};
+			populateCategories(data.categories);
+			if (requirements.length > 0){
+				requirements.sort((a, b) => a.timestamp - b.timestamp);
+				//console.log(requirements);
+			}
+		})
+		.catch(error => {
+			console.error('There was a problem with the fetch operation:', error);
+		});
 }
 
-// get checked checkbox values and username
-function getCheckedValues() {
-	const username = document
-		.getElementById("user-info")
-		.getAttribute("user-name");
-	const checkboxes = document.querySelectorAll(
-		'#requirementsContainer input[type="checkbox"]',
-	);
-	const checkedValues = [];
-	let countValues = 0;
 
-	checkboxes.forEach(function (checkbox) {
-		if (checkbox.checked) {
-			const value = checkbox.value;
-			checkedValues.push(value);
-			countValues++;
+
+function fetchUserFeeds() {
+	fetch('/api/userAgreementId')
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			var userIds = [];
+			
+			for (let id in data.agreementid) {
+				userIds.push(data.agreementid[id])
+			}
+			populateUserFeeds(userIds);
+		})
+		.catch(error => {
+			console.error('There was a problem with the fetch operation:', error);
+		});
+}
+
+
+
+
+function populateUserFeeds(userids){
+	
+	if (!requirements){
+		//console.log("No requirements found");
+		emptyDbOrUserAgreed("eMPTy", 'userfeeds');
+		
+	} else if (!userids.length == requirements.length) {
+		var userFeeds = document.getElementById('userfeeds');
+		userFeeds.innerHTML = '';
+		
+		for (let index in requirements){
+
+			//console.log(requirements[index].id)
+			req = requirements[index]
+
+			if (!userids.includes(req.id)) {
+				var requirementItem = document.createElement('div');
+				requirementItem.classList.add('requirement-item');
+				requirementItem.innerHTML = `
+						<div class="requirement-item">
+							<div class="checkbox-heading">
+								<label for="req1">${req.category}</label>
+							</div>
+							<div class="requirement-description">${req.description}</div>
+							<div class="checkbox-container" onclick=handleCheckboxClick('${req.id}')>
+								<div class="checkbox-inner-container">
+									<span >ok
+									    <input type="checkbox" id="${req.id}" value="${req.id}" class="custom-checkbox" onclick="handleCheckboxClick(this)"/>
+									</span>
+								</div>
+							</div>
+						</div>
+				`;
+				userFeeds.appendChild(requirementItem);
+			}
 		}
-	});
-
-	let numOfCheckboxes = checkboxes.length;
-
-	if (countValues !== numOfCheckboxes) {
-		alert("All checkboxes must be checked");
+	    var agreebuttonDiv = document.createElement('div');
+			agreebuttonDiv.classList.add("agreement-section")
+			agreebuttonDiv.innerHTML = `
+					   <div class="subheading">Agreement</div>
+					   <div class="agreement-info">
+						   By checking the boxes above, I agree to comply with the
+						   stated requirements.
+					   </div>
+					   <button class="button" onclick="pushCheckedValues()" >
+						   Agree
+					   </button>
+			`;
+	    userFeeds.appendChild(agreebuttonDiv);
 	} else {
-		//console.log(checkedValues, username)
-		return [checkedValues, username];
+			console.log("All requirements have been fetched");
+			emptyDbOrUserAgreed('', 'userfeeds');
+
 	}
 }
 
-// send data to Flask API
-async function sendDataToAPI(values) {
-	try {
-		const response = await fetch("/api/store-values", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ values }),
-		});
 
-		if (!response.ok) {
-			throw new Error("Failed to store values");
+
+
+function emptyDbOrUserAgreed(message, DivId) {
+    var parentDiv = document.getElementById(DivId);
+	var innerDiv = document.createElement("div");
+
+	parentDiv.innerHTML = '';
+	parentDiv.classList.add("empty-div");
+	innerDiv.classList.add('requirement-item');
+	
+	if (message == "eMPTy") {
+		innerDiv.innerHTML = `
+				<div class="empty-database">
+					<div class="empty-database-content">
+						<div class="empty-database-header">Requirements Not Available</div>
+						<div class="empty-database-message">The database is empty</div>
+					</div>
+				</div>
+		`;
+	} else {
+		innerDiv.innerHTML = `
+				<div class="agreement-success">
+					<div class="agreement-success-content">
+						<i class="fas fa-check-circle"></i>
+						<span>Requirement Agreed</span>
+					</div>
+				</div>
+		`;
+	}
+	parentDiv.appendChild(innerDiv);
+}
+
+
+
+
+
+
+
+function populateCategories(data) {
+	var categories = document.getElementById('categories-list');
+	categories.classList.add('categories-list');
+
+	for (var category in data) {
+		if (data.hasOwnProperty(category)) {
+			var categoryItem = document.createElement('li');
+			categoryItem.textContent = category;
+
+			// Add click event listener to toggle sublist
+			categoryItem.addEventListener('click', function() {
+				var sublist = this.querySelector('ul');
+				sublist.classList.toggle('sublist-active');
+			});
+
+			categories.appendChild(categoryItem);
+			var descriptionsList = document.createElement('ul');
+
+			data[category].forEach(function(item) {
+				var descriptionItem = document.createElement('li');
+				descriptionItem.textContent = item.description;
+				descriptionsList.appendChild(descriptionItem);
+			});
+
+			categoryItem.appendChild(descriptionsList);
 		}
-
-		const data = await response.json();
-		console.log("Response from Flask API:", data);
-	} catch (error) {
-		console.error("Error sending data to Flask API:", error);
 	}
 }
 
-function clearAndAppendHTMLToDiv() {
-	var divElement = document.getElementById("colapsable-div");
-	divElement.innerHTML = "";
 
-	var row = `
-		<div class="agreement-success">
-            <div class="agreement-success-content">
-                <i class="fas fa-check-circle"></i>
-                <span>Requirement Agreed</span>
-            </div>
-       </div>
-	`;
 
-	divElement.innerHTML += row;
-}
-
-// main function
-async function processCheckboxValues() {
-	const [checkedValues, username] = getCheckedValues();
-	if (checkedValues.length > 0) {
-		const isValidUser = await validateUser();
-		if (isValidUser) {
-			console.log(checkedValues, username)
-			await sendDataToAPI([checkedValues, username]);
-		} else {
-			alert("Invalid user. Please log in again.");
+// Function to handle checkbox click
+function handleCheckboxClick(checkbox) {
+	if (checkbox.checked) {
+		checkedValues.push(checkbox.value);
+	} else {
+		const index = checkedValues.indexOf(checkbox.value);
+		if (index !== -1) {
+			checkedValues.splice(index, 1);
 		}
 	}
 }
 
 
-//onlcick event function
-async function processCheckboxBeforClear() {
-	await processCheckboxValues(); 
-	clearAndAppendHTMLToDiv(); 
-}
+// Function to push checked values to Flask API
+function pushCheckedValues() {
 
-
-async function fetchCategoriesAndPopulateList(divId) {
-	try {
-		const response = await fetch("/api/categories");
-		const data = await response.json();
-		populateCategoriesInDiv(data.categories, divId);
-	} catch (error) {
-		console.error("Error fetching categories:", error);
-	}
-}
-
-function populateCategoriesInDiv(categories, divId) {
-	const div = document.getElementById(divId);
-	if (!div) {
-		console.error("Div with specified ID not found.");
-		return;
-	}
-
-	const list = document.createElement("ul");
-	list.classList.add("category-list"); 
-
-	for (const category in categories) {
-		const categoryItem = document.createElement("li");
-		categoryItem.textContent = category;
-		categoryItem.classList.add("category-item"); 
-
-		const descriptionList = document.createElement("ul");
-		descriptionList.classList.add("description-list");
-
-		for (const item of categories[category]) {
-			const descriptionItem = document.createElement("li");
-			descriptionItem.textContent = item.description;
-			descriptionItem.classList.add("description-item"); 
-			descriptionList.appendChild(descriptionItem);
-		}
-
-		categoryItem.appendChild(descriptionList);
-		list.appendChild(categoryItem);
-
-		categoryItem.addEventListener("click", () => {
-			descriptionList.classList.toggle("expanded");
-		});
-	}
-
-	div.appendChild(list);
-}
-
-// Call the function to fetch and populate categories inside the specified div
-fetchCategoriesAndPopulateList("categories-list");
-
-
-
-
-
-
-function fetchUserInfo() {
-	fetch('/api/user-info')
-	.then(response => response.json())
-	.then(data => {
-		// Populate the HTML elements with the fetched data
-		document.getElementById('username').textContent = data.name;
-		document.getElementById('userid').textContent = data.id;
-		document.getElementById('userole').textContent = data.roles;
+	fetch('/api/checkbox-values', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ values: checkedValues })
 	})
-	.catch(error => console.error('Error fetching user info:', error));
+	.then(response => {
+		if (response.ok) {
+			//console.log('Checked values sent successfully.');
+			checkedValues = [];
+			fetchUserFeeds();
+		} else {
+			console.error('Failed to send checked values.');
+		}
+	})
+	.catch(error => {
+		console.error('Error:', error);
+	});
 }
 
-// Call the fetchUserInfo function when the page loads
-window.onload = fetchUserInfo;
 
 
+window.onload = function() {
+	fetchDataAndPopulateCategories("/api/all-feeds") ;
+	fetchUserFeeds();
+	//console.log(requirements);
+}
